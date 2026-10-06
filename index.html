@@ -1,0 +1,2672 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Your Name · Frontend Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Manrope:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070707;
+      --panel: #101010;
+      --line: #232323;
+      --text: #f2f2f2;
+      --mute: #c4c3c3;
+      --dim: #a7a7a7;
+      --inv: #0a0a0a;
+      --glow: rgba(255, 255, 255, .07);
+      --display: 'Syne', 'Arial Black', system-ui, sans-serif;
+      --body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px)
+    }
+
+    @media (prefers-color-scheme:light) {
+      :root:not([data-theme="dark"]) {
+        --bg: #f4f4f4;
+        --panel: #fff;
+        --line: #dcdcdc;
+        --text: #0e0e0e;
+        --mute: #6a6a6a;
+        --dim: #9a9a9a;
+        --inv: #f4f4f4;
+        --glow: rgba(0, 0, 0, .06)
+      }
+    }
+
+    :root[data-theme="light"] {
+      --bg: #f4f4f4;
+      --panel: #fff;
+      --line: #dcdcdc;
+      --text: #0e0e0e;
+      --mute: #6a6a6a;
+      --dim: #9a9a9a;
+      --inv: #f4f4f4;
+      --glow: rgba(0, 0, 0, .06)
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: inherit
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 80px)
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 400 15px/1.65 var(--body);
+      overflow-x: hidden;
+      background-image: radial-gradient(900px 500px at 75% 10%, var(--glow), transparent 70%)
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+      color: inherit
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--text);
+      outline-offset: 3px
+    }
+
+    svg {
+      width: 1em;
+      height: 1em;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex: none
+    }
+
+    #fx {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none
+    }
+
+    /* intro */
+    #intro {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: #000;
+      color: #fff;
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      gap: 26px;
+      transition: opacity .7s, visibility .7s
+    }
+
+    #intro.done {
+      opacity: 0;
+      visibility: hidden
+    }
+
+    #intro .ic {
+      display: flex;
+      gap: 18px;
+      font-size: 20px;
+      color: #bbb
+    }
+
+    #intro h1 {
+      margin: 0;
+      font: 800 clamp(26px, 5vw, 44px)/1.25 var(--display);
+      text-align: center
+    }
+
+    #intro h1 span {
+      display: block;
+      color: #666
+    }
+
+    #intro .ic,
+    #intro h1 {
+      animation: rise 1s both
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    /* nav */
+    header {
+      position: fixed;
+      z-index: 20;
+      top: calc(env(safe-area-inset-top, 0px) + 16px);
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      padding: 0 16px
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: min(1080px, 100%);
+      padding: 10px 22px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--panel) 80%, transparent);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px)
+    }
+
+    nav .logo {
+      margin-right: auto;
+      font: 600 13px var(--display);
+      color: var(--mute)
+    }
+
+    nav a {
+      padding: 4px 12px;
+      font-size: 13px;
+      color: var(--mute);
+      border-bottom: 1px solid transparent;
+      transition: color .2s
+    }
+
+    nav a:hover,
+    nav a.on {
+      color: var(--text);
+      border-bottom-color: var(--text)
+    }
+
+    section {
+      width: min(1080px, 100% - 40px);
+      margin: 0 auto;
+      padding: 110px 0 60px
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      max-width: none;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 120px 20px 90px;
+      text-align: center;
+      background: radial-gradient(700px 420px at 50% 45%, var(--glow), transparent 70%)
+    }
+
+    .hero-in {
+      position: relative;
+      width: min(780px, 100%)
+    }
+
+    .hint {
+      position: absolute;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      color: var(--dim);
+      font-size: 12px
+    }
+
+    .hint i {
+      display: block;
+      width: 1px;
+      height: 34px;
+      background: linear-gradient(var(--dim), transparent);
+      animation: drop 2s ease-in-out infinite
+    }
+
+    @keyframes drop {
+      0% {
+        transform: scaleY(0);
+        transform-origin: top
+      }
+
+      50% {
+        transform: scaleY(1);
+        transform-origin: top
+      }
+
+      51% {
+        transform-origin: bottom
+      }
+
+      100% {
+        transform: scaleY(0);
+        transform-origin: bottom
+      }
+    }
+
+    h2,
+    .hero h1 {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 800;
+      line-height: 1.02;
+      letter-spacing: -.02em
+    }
+
+    .hero h1 {
+      font-size: clamp(52px, 11vw, 120px)
+    }
+
+    .hero h1 span {
+      display: block;
+      color: var(--dim)
+    }
+
+    .type {
+      margin: 22px 0 6px;
+      color: var(--mute);
+      font-size: 14px
+    }
+
+    .type::after {
+      content: "_";
+      animation: blink 1s steps(1) infinite
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0
+      }
+    }
+
+    .lede {
+      max-width: 46ch;
+      color: var(--mute);
+      margin: 0 auto 20px
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center
+    }
+
+    .chip {
+      padding: 3px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--mute);
+      background: var(--panel)
+    }
+
+    .tag-info {
+      color: var(--dim)
+    }
+
+    .status {
+      margin-top: 26px;
+      color: var(--dim);
+      font-size: 12.5px;
+      display: grid;
+      gap: 2px;
+      justify-items: center
+    }
+
+    /* lanyard */
+
+    /* hero extras */
+    .avatar {
+      position: relative;
+      width: 104px;
+      height: 104px;
+      margin: 0 auto 24px;
+      border-radius: 50%;
+      background: #ddd center/cover
+    }
+
+    .avatar::before {
+      content: "";
+      position: absolute;
+      inset: -9px;
+      border: 1px dashed var(--mute);
+      border-radius: 50%;
+      animation: spin 18s linear infinite
+    }
+
+    .avatar svg {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: block;
+      stroke: none
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .welcome {
+      display: inline-block;
+      padding: 5px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--mute);
+      font-size: 13px;
+      margin-bottom: 18px
+    }
+
+    .hero .btns {
+      justify-content: center;
+      margin: 22px 0 18px
+    }
+
+    .marquee {
+      overflow: hidden;
+      border-block: 1px solid var(--line);
+      padding: 15px 0;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent)
+    }
+
+    .track {
+      display: flex;
+      gap: 46px;
+      width: max-content;
+      animation: mq 34s linear infinite;
+      font: 600 15px var(--display);
+      color: var(--dim)
+    }
+
+    .track span {
+      transition: color .2s
+    }
+
+    .track span:hover {
+      color: var(--text)
+    }
+
+    .marquee:hover .track {
+      animation-play-state: paused
+    }
+
+    @keyframes mq {
+      to {
+        transform: translateX(-50%)
+      }
+    }
+
+    .about {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 30px;
+      align-items: center
+    }
+
+    .tag {
+      color: var(--dim);
+      font-size: 13px;
+      margin-bottom: 10px
+    }
+
+    h2 {
+      font-size: clamp(34px, 5.5vw, 60px)
+    }
+
+    .about p {
+      color: var(--mute);
+      max-width: 54ch
+    }
+
+    .quote {
+      display: inline-block;
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--text)
+    }
+
+    .btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 22px 0
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 9px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: transform .15s
+    }
+
+    .btn:hover {
+      transform: translateY(-1px)
+    }
+
+    .btn.solid {
+      background: var(--text);
+      color: var(--inv);
+      border-color: var(--text)
+    }
+
+    .stats {
+      grid-column: 1/-1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px
+    }
+
+    .stat {
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2px 10px;
+      align-items: center
+    }
+
+    .stat svg {
+      color: var(--mute)
+    }
+
+    .stat b {
+      font: 800 28px/1 var(--display);
+      grid-row: 1/3;
+      grid-column: 2
+    }
+
+    .stat span {
+      color: var(--mute);
+      font-size: 12.5px
+    }
+
+    .lan {
+      position: relative;
+      height: 640px;
+      margin-top: -110px;
+      align-self: start
+    }
+
+    .lan canvas {
+      width: 100%;
+      height: 100%;
+      display: block
+    }
+
+    .info {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 20px;
+      margin: 20px 0 4px;
+      font-size: 14px
+    }
+
+    .info dt {
+      color: var(--dim)
+    }
+
+    .info dd {
+      margin: 0
+    }
+
+    .more {
+      grid-column: 1/-1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px
+    }
+
+    .more .box {
+      padding: 24px
+    }
+
+    .more .box h3 {
+      font-size: 19px;
+      margin-bottom: 16px
+    }
+
+    .edu {
+      list-style: none;
+      margin: 0;
+      padding: 0 0 0 16px;
+      border-left: 1px solid var(--line)
+    }
+
+    .edu li {
+      position: relative;
+      padding: 0 0 18px 14px;
+      font-size: 13.5px
+    }
+
+    .edu li:last-child {
+      padding-bottom: 0
+    }
+
+    .edu li::before {
+      content: "";
+      position: absolute;
+      left: -21px;
+      top: 7px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--text);
+      box-shadow: 0 0 0 4px var(--panel)
+    }
+
+    .edu b {
+      display: block;
+      font-weight: 600
+    }
+
+    .edu span {
+      color: var(--mute)
+    }
+
+    .sk {
+      margin-bottom: 14px;
+      font-size: 13px
+    }
+
+    .sk div {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px
+    }
+
+    .sk em {
+      font-style: normal;
+      color: var(--mute)
+    }
+
+    .bar {
+      height: 6px;
+      border-radius: 9px;
+      background: var(--line);
+      overflow: hidden
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: 9px;
+      background: linear-gradient(90deg, var(--mute), var(--text));
+      transition: width 1.3s cubic-bezier(.2, .8, .2, 1)
+    }
+
+    .on .bar i {
+      width: var(--w)
+    }
+
+    .chips.l {
+      justify-content: flex-start
+    }
+
+    /* hover */
+    .card,
+    .tile,
+    .stat,
+    .soc a,
+    .cm,
+    .chip,
+    .btn,
+    .box {
+      transition: transform .25s, border-color .25s, box-shadow .25s, background .25s
+    }
+
+    .card:hover,
+    .tile:hover,
+    .stat:hover {
+      transform: translateY(-6px);
+      border-color: var(--mute);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .35)
+    }
+
+    .box:hover {
+      border-color: var(--dim)
+    }
+
+    .soc a:hover,
+    .cm:hover,
+    .chip:hover {
+      transform: translateY(-2px);
+      border-color: var(--mute)
+    }
+
+    .card .th {
+      transition: transform .5s;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: #111;
+    }
+
+    .card .th img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform .5s;
+    }
+
+    .card a svg {
+      transition: transform .2s
+    }
+
+    .card a:hover svg {
+      transform: translate(3px, -3px)
+    }
+
+    .tile i {
+      transition: transform .25s
+    }
+
+    .tile:hover i {
+      transform: rotate(-8deg) scale(1.1)
+    }
+
+    .btn.solid:hover {
+      box-shadow: 0 8px 24px var(--glow)
+    }
+
+    .err {
+      display: block;
+      min-height: 0;
+      margin: -4px 0 8px;
+      color: #ff8a8a;
+      font-size: 12px
+    }
+
+    .fld[aria-invalid="true"] {
+      border-color: #ff8a8a
+    }
+
+    /* showcase */
+    .show {
+      text-align: center
+    }
+
+    .show .sub {
+      color: var(--mute);
+      margin: 10px auto 30px;
+      max-width: 48ch
+    }
+
+    .tabs {
+      display: inline-flex;
+      gap: 4px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      margin-bottom: 34px;
+      max-width: 100%
+    }
+
+    .tabs button {
+      border: 0;
+      background: none;
+      padding: 9px 30px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--mute);
+      cursor: pointer
+    }
+
+    .tabs button[aria-selected="true"] {
+      background: var(--text);
+      color: var(--inv);
+      font-weight: 600
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 18px;
+      text-align: left
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column
+    }
+
+    .card .th {
+      transition: transform .5s;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: #111;
+    }
+
+    .card .th img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform .5s;
+    }
+
+    .card .bd {
+      padding: 16px;
+      display: grid;
+      gap: 6px
+    }
+
+    .card h3 {
+      margin: 0;
+      font: 600 15px var(--display)
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--mute);
+      font-size: 13px
+    }
+
+    .card a {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      gap: 6px;
+      align-items: center
+    }
+
+    .tech {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px
+    }
+
+    .tile {
+      padding: 22px 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--mute)
+    }
+
+    .tile i {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 10px;
+      border-radius: 10px;
+      font: 800 15px var(--display);
+      font-style: normal;
+      color: #fff
+    }
+
+    /* contact */
+    .contact {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 20px;
+      align-items: start
+    }
+
+    .box {
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--panel)
+    }
+
+    .box h3 {
+      margin: 0 0 4px;
+      font: 800 24px var(--display)
+    }
+
+    .box>p {
+      margin: 0 0 18px;
+      color: var(--mute);
+      font-size: 13.5px
+    }
+
+    .fld {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--bg);
+      font-size: 14px;
+      resize: vertical
+    }
+
+    .fld::placeholder {
+      color: var(--dim)
+    }
+
+    .btn.full {
+      width: 100%;
+      justify-content: center;
+      margin-bottom: 22px
+    }
+
+    .soc {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
+
+    .soc a {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--bg);
+      font-size: 13px
+    }
+
+    .soc small {
+      display: block;
+      color: var(--dim);
+      font-size: 11.5px;
+      line-height: 1.2
+    }
+
+    .soc-label {
+      margin-bottom: 10px
+    }
+
+    .cm {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--bg)
+    }
+
+    .cm .av {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--line);
+      display: grid;
+      place-items: center;
+      font-weight: 600;
+      font-size: 12px;
+      flex: none
+    }
+
+    .cm b {
+      font-size: 13px
+    }
+
+    .cm p {
+      margin: 0;
+      color: var(--mute);
+      font-size: 13px;
+      overflow-wrap: anywhere
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+      transform: translate(-50%, 30px);
+      opacity: 0;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--text);
+      color: var(--inv);
+      font-size: 13px;
+      font-weight: 600;
+      transition: .3s;
+      z-index: 60
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0)
+    }
+
+    footer {
+      text-align: center;
+      color: var(--dim);
+      font-size: 12.5px;
+      padding: 30px 20px 50px
+    }
+
+    @media (max-width:820px) {
+
+      .hero,
+      .about,
+      .contact {
+        grid-template-columns: 1fr
+      }
+
+      .lan {
+        height: 520px;
+        order: -1
+      }
+
+      .more {
+        grid-template-columns: 1fr
+      }
+
+      .stats {
+        grid-template-columns: 1fr
+      }
+
+      nav a {
+        padding: 4px 7px
+      }
+
+      nav .logo {
+        display: none
+      }
+
+      nav {
+        justify-content: center
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      .swing,
+      .type::after,
+      #intro .ic,
+      #intro h1 {
+        animation: none
+      }
+
+      html {
+        scroll-behavior: auto
+      }
+    }
+
+    .about>div>p:first-of-type {
+      margin: 18px 0 6px
+    }
+
+    .project-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 70;
+      display: grid;
+      place-content: center;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease
+    }
+
+    .project-modal.show {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .project-modal-box {
+      background: #101010;
+      border-radius: 12px;
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto
+    }
+
+    .project-modal h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #fff
+    }
+
+    .project-modal img {
+      width: 100%;
+      border-radius: 8px
+    }
+
+    .project-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px
+    }
+
+    .project-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer
+    }
+
+    @media (max-width:500px) {
+      .project-modal-box {
+        padding: 16px
+      }
+
+      .project-modal h3 {
+        font-size: 16px
+      }
+    }
+
+    .btn.full.compact {
+      margin-bottom: 6px
+    }
+
+    #intro {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: #000;
+      color: #fff;
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      gap: 26px;
+      transition: opacity .9s, visibility .9s, filter .9s, transform .9s;
+    }
+
+    #intro.done {
+      opacity: 0;
+      visibility: hidden;
+      filter: blur(10px);
+      transform: scale(1.06)
+    }
+
+    /* icon chips pop in one by one */
+    #intro .ic {
+      display: flex;
+      gap: 14px
+    }
+
+    .ic-c {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid #2a2a2a;
+      background: #0e0e0e;
+      display: grid;
+      place-items: center;
+      color: #cfcfcf;
+      font-size: 17px;
+      opacity: 0;
+      transform: scale(.4);
+      animation: pop .6s cubic-bezier(.3, 1.6, .5, 1) var(--d) forwards;
+    }
+
+    .ic-c svg {
+      width: 1em;
+      height: 1em;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    @keyframes pop {
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .ic-c:nth-child(1) { --d: .2s; }
+    .ic-c:nth-child(2) { --d: .4s; }
+    .ic-c:nth-child(3) { --d: .6s; }
+
+    #intro h1 .w:nth-of-type(1) { --d: .9s; }
+    #intro h1 .w:nth-of-type(2) { --d: 1.15s; }
+    #intro h1 .w:nth-of-type(3) { --d: 1.35s; }
+    #intro h1 .l2 .w:nth-of-type(1) { --d: 1.8s; }
+    #intro h1 .l2 .w:nth-of-type(2) { --d: 2.05s; }
+
+    /* words rise from a blur */
+    #intro h1 {
+      margin: 0;
+      font: 800 clamp(28px, 5.5vw, 48px)/1.3 system-ui, sans-serif;
+      text-align: center
+    }
+
+    #intro h1 .w {
+      display: inline-block;
+      opacity: 0;
+      filter: blur(12px);
+      transform: translateY(18px);
+      animation: word .9s cubic-bezier(.2, .8, .2, 1) var(--d) forwards;
+    }
+
+    #intro h1 .l2 {
+      display: block;
+      color: #6d6d6d
+    }
+
+    @keyframes word {
+      to {
+        opacity: 1;
+        filter: none;
+        transform: none
+      }
+    }
+
+    /* pill & loading bar */
+    #intro .pill {
+      padding: 5px 16px;
+      border: 1px solid #2a2a2a;
+      border-radius: 999px;
+      background: #0e0e0e;
+      color: #8a8a8a;
+      font-size: 12px;
+      opacity: 0;
+      animation: fade .6s 2.6s forwards;
+    }
+
+    #intro .ld {
+      width: 140px;
+      height: 2px;
+      border-radius: 2px;
+      background: #1c1c1c;
+      overflow: hidden
+    }
+
+    #intro .ld i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: #fff;
+      animation: fill 3.2s .3s ease-in-out forwards
+    }
+
+    @keyframes fade {
+      to {
+        opacity: 1
+      }
+    }
+
+    @keyframes fill {
+      to {
+        width: 100%
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      #intro * {
+        animation: none !important;
+        opacity: 1;
+        filter: none;
+        transform: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+ <div id="intro" aria-hidden="true">
+      <div class="ic">
+        <span class="ic-c"><svg viewBox="0 0 24 24">
+            <path d="m8 8-4 4 4 4M16 8l4 4-4 4" />
+          </svg></span>
+        <span class="ic-c"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 21a8 8 0 0 1 16 0" />
+          </svg></span>
+        <span class="ic-c"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+          </svg></span>
+      </div>
+      <h1>
+        <span class="w">Welcome</span>
+        <span class="w">to</span>
+        <span class="w">my</span>
+        <span class="l2">
+          <span class="w">Portfolio</span>
+        </span>
+      </h1>
+      <div class="pill">yourname.dev</div>
+      <div class="ld"><i></i></div>
+    </div>
+
+  <header>
+    <nav aria-label="Main">
+      <a class="logo" href="#home">kerbs.dev</a>
+      <a href="#home" class="on">Home</a><a href="#about">About</a><a href="#portfolio">Portfolio</a><a
+        href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <canvas id="fx" aria-hidden="true"></canvas>
+      <div class="hero-in">
+        <div class="avatar" id="avatar" role="img" aria-label="Profile picture"><svg viewBox="0 0 100 100">
+            <rect width="100" height="100" fill="#d9d9d9" />
+            <circle cx="50" cy="40" r="18" fill="#222" />
+            <path d="M12 100c0-30 18-44 38-44s38 14 38 44z" fill="#111" />
+          </svg></div>
+        <div class="welcome">Portfolio</div>
+        <h1>My <span>Portfolio</span></h1>
+        <div class="type" id="type"></div>
+        <p class="lede">Hi, I'm Kery Penamante.
+          an aspiring IT student passionate programming, and web development. 
+          Explore my website to learn more about me, my skills, projects, and interests.
+        </p>
+        <div class="btns"><a class="btn solid" href="#about">About me</a><a class="btn" href="#portfolio">See my projects</a></div>
+        <div class="chips"><span class="chip">Java</span><span class="chip">PHP</span><span class="chip">HTML</span>
+        </div>
+      </div>
+      <div class="hint" aria-hidden="true">Scroll<i></i></div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="track" id="track"></div>
+    </div>
+
+    <section id="about" class="about">
+      <div>
+        <div class="tag">About me</div>
+        <h2>Kerby Penamante</h2>
+        <p>A 3rd Year IT student with a passion for Full stack development.
+          Experienced in building responsive websites with an eye for visual detail and a focus on user experience.</p>
+        <dl class="info">
+          <dt>Name</dt>
+          <dd>Kerby Penamante</dd>
+          <dt>Age</dt>
+          <dd>20 years old</dd>
+          <dt>Location</dt>
+          <dd>Manila, Philippines</dd>
+          <dt>Email</dt>
+          <dd>kerbypenamante325@email.com</dd>
+          <dt>Status</dt>
+          <dd>Open to internships</dd>
+        </dl>
+        <span class="quote">"Turning ideas into clean, modern, and meaningful digital experiences."</span>
+        <div class="btns"><a class="btn solid" href="#" id="cv"><svg viewBox="0 0 24 24">
+              <path d="M14 3H6v18h12V7zM14 3v4h4" />
+            </svg>Download CV</a><a class="btn" href="#portfolio"><svg viewBox="0 0 24 24">
+              <path d="M7 17 17 7M8 7h9v9" />
+            </svg>View projects</a></div>
+      </div>
+      <div class="lan"><canvas id="lc" aria-label="ID card hanging on a lanyard. Drag it to swing it."></canvas></div>
+      <div class="more" id="more">
+        <div class="box">
+          <h3>Education</h3>
+          <ul class="edu">
+            <li><b>BS Information Technology</b><span>National University, 2024 to present</span></li>
+            <li><b>Senior High School, ICT</b><span>Tongohin National High School, 2022 to 2024</span></li>
+            <li><b>Junior High School</b><span>Tongohin National High School, 2018 to 2022</span></li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3>Skills</h3>
+          <div id="skills"></div>
+        </div>
+        <div class="box">
+          <h3>Interests</h3>
+          <div class="chips l" id="interests"></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><svg viewBox="0 0 24 24">
+            <path d="m8 8-4 4 4 4M16 8l4 4-4 4" />
+          </svg><b id="n1">0</b><span>Projects</span></div>
+        <div class="stat"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="9" r="5" />
+            <path d="m9 13-1 8 4-2 4 2-1-8" />
+          </svg><b id="n2">0</b><span>Achievements</span></div>
+        <div class="stat"><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" />
+            <path d="m8 12 3 3 5-6" />
+          </svg><b id="n3">0</b><span>Completed works</span></div>
+      </div>
+    </section>
+
+    <section id="portfolio" class="show">
+      <h2>Portfolio Showcase</h2>
+      <p class="sub">Explore my journey through projects, certifications, and technical skills.</p>
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-t="projects">Projects</button>
+        <button role="tab" aria-selected="false" data-t="achievements">Achievements</button>
+        <button role="tab" aria-selected="false" data-t="stack">Tech Stack</button>
+      </div>
+      <div id="panel"></div>
+    </section>
+
+    <section id="contact" class="contact">
+      <div class="box">
+        <h3>Contact me</h3>
+        <p>Email: kerbypenamante325@email.com &nbsp;|&nbsp; Phone: +63 981 111 0123<br>Reach out if you want to collaborate, discuss
+          ideas, or simply say hello.</p>
+        <input class="fld" id="cn" placeholder="your name.." autocomplete="name"><small class="err" id="e-cn"></small>
+        <input class="fld" id="ce" type="email" placeholder="your email.." autocomplete="email"><small class="err" id="e-ce"></small>
+        <textarea class="fld" id="cm" rows="4" placeholder="your message.."></textarea><small class="err" id="e-cm"></small>
+        <button class="btn full" id="send"><svg viewBox="0 0 24 24">
+            <path d="m21 3-9 18-2-8-8-2zM21 3 10 13" />
+          </svg>Send message</button>
+        <p class="soc-label">Find me on</p>
+        <div class="soc">
+          <a href="#"><svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="3" />
+              <path
+                d="M13.5 22v-8h3l.5-3h-3.5V7.2c0-.9.3-1.5 1.6-1.5H17V2.8c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.2V11H7v3h3.3v8h3.2Z" />
+            </svg><span>Facebook<small>@kerbypenamante</small></span></a>
+          <a href="#"><svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <circle cx="12" cy="12" r="4" />
+            </svg><span>Instagram<small>@kerbypenamante</small></span></a>
+          <a href="#"><svg viewBox="0 0 24 24">
+              <rect x="2" y="5" width="20" height="14" rx="4" />
+              <path d="m10 9 5 3-5 3z" />
+            </svg><span>YouTube<small>@kerbypenamante</small></span></a>
+          <a href="#"><svg viewBox="0 0 24 24">
+              <path
+                d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3.1-.3 6.4-1.5 6.4-7A5.4 5.4 0 0 0 20 4.8 5 5 0 0 0 19.900 1S18.700.7 16 2.500a13.400 13.400 0 0 0-7 0C6.300.7 5.100 1 5.100 1A5 5 0 0 0 5 4.800 5.400 5.400 0 0 0 3.600 8.500c0 5.500 3.300 6.700 6.400 7a3.400 3.400 0 0 0-1 2.600V22" />
+            </svg><span>GitHub<small>@kerbypenamante</small></span></a>
+        </div>
+      </div>
+      <div class="box">
+        <h3>Comments</h3>
+        <p>Leave your thoughts here.</p>
+        <input class="fld" id="kn" placeholder="your name.."><small class="err" id="e-kn"></small>
+        <textarea class="fld" id="kc" rows="3" placeholder="your comment.."></textarea><small class="err"
+          id="e-kc"></small>
+        <button type="button" class="btn full compact" id="post">Post comment</button>
+        <div id="list"></div>
+      </div>
+    </section>
+  </main>
+  <footer>Portfolio ni Kerbs</footer>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    // 3700 ms = the time the animation takes before the screen dissolves
+    setTimeout(() => {
+      document.getElementById('intro').classList.add('done');
+    }, 3700);
+    /* PORTFOLIO SCRIPT
+       OOP used here: classes + objects, inheritance (Particle >
+       GlowParticle/Spark, Card > ProjectCard, Rule > Required),
+       encapsulation (#private fields) and polymorphism (draw(),
+       render(), test() behave differently per subclass). */
+
+    /* Content */
+    const DATA = {
+      name: "Kerby",
+      role: "Full Stack Developer",
+      photo: "assets/images/id.png",
+      phrases: ["Happy life without coding.", "Simple Portfolio", "Always learning something new."],
+      projects: [
+        {
+          t: "Philipines Tourist Spots",
+          d: "This site: responsive, animated, with a physics ID card and particle background.",
+          img: "assets/images/pilipin.png",
+          link: "https://pilipin.netlify.app",
+          tags: "HTML, CSS, JavaScript",
+          l: "#",
+        },
+        {
+          t: "Valentines Date",
+          d: "A romantic website for a special day.",
+          tags: "HTML, CSS, JavaScript",
+          img: "assets/images/valentines.png",
+          link: "https://cozy-pastelito-65db08.netlify.app",
+          l: "#",
+        },
+        {
+          t: "CAH Library",
+          d: "A library management system built with PHP and CSS.",
+          tags: "PHP, MySQL, CSS",
+          img: "assets/images/CAH.png",
+          l: "#",
+        },
+        {
+          t: "Ordering System",
+          d: "A simple ordering system built with PHP and CSS.",
+          tags: "PHP, MySQL, CSS",
+          img: "assets/images/restau.png",
+          l: "#",
+        },
+      ],
+      achievements: [
+        { t: "PROJECT MANAGEMENT Certificate", d: "Certiport, 2026" },
+        { t: "High Honor", d: "Senior High School, 2024" },
+        { t: "Dean's Lister", d: "National University, 2026" },
+      ],
+      stack: [
+        ["React", "Re", "#1b6f8a"],
+        ["TypeScript", "TS", "#2b6cb0"],
+        ["Java", "J", "#0f8f9c"],
+        ["HTML", "H5", "#d4501f"],
+        ["CSS", "C3", "#2a6fd0"],
+        ["PHP", "PHP", "#6b6fb5"],
+        ["Laravel", "La", "#d03c36"],
+        ["Node.js", "N", "#000"],
+        ["JavaScript", "JS", "#b59b00"],
+        ["MySQL", "SQL", "#2c6b8a"],
+      ],
+      skills: [
+        ["HTML and CSS", 92],
+        ["JavaScript", 85],
+        ["PHP", 78],
+        ["UI design", 72],
+      ],
+      interests: ["Web design", "Open source", "Eating", "Gaming", "Music"],
+    };
+
+    const $ = (s, r) => (r || document).querySelector(s);
+    const reduced = matchMedia("(prefers-reduced-motion:reduce)").matches;
+    const esc = (s) =>
+      String(s).replace(/[&<>\"]/g, (c) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+      }[c]));
+
+    function toast(m) {
+      const t = $("#toast");
+      t.textContent = m;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2600);
+    }
+
+    /* Typewriter */
+    class Typewriter {
+      #el;
+      #list;
+      #i = 0;
+      #j = 0;
+      #del = false;
+
+      constructor(el, list) {
+        this.#el = el;
+        this.#list = list;
+      }
+
+      start() {
+        if (reduced) {
+          this.#el.textContent = this.#list[0];
+          return;
+        }
+        this.#tick();
+      }
+
+      #tick() {
+        const w = this.#list[this.#i];
+        this.#j += this.#del ? -1 : 1;
+        this.#el.textContent = w.slice(0, this.#j);
+
+        let d = this.#del ? 35 : 80;
+        if (!this.#del && this.#j === w.length) {
+          this.#del = true;
+          d = 1400;
+        } else if (this.#del && this.#j === 0) {
+          this.#del = false;
+          this.#i = (this.#i + 1) % this.#list.length;
+          d = 350;
+        }
+
+        setTimeout(() => this.#tick(), d);
+      }
+    }
+
+    /*Particles*/
+    class Particle {
+      constructor(w, h) {
+        this.x = Math.random() * w;
+        this.y = Math.random() * h;
+        const a = Math.random() * 6.283;
+        this.speed = 0.25 + Math.random() * 0.55;
+        this.vx = Math.cos(a) * this.speed;
+        this.vy = Math.sin(a) * this.speed;
+        this.r = 0.8 + Math.random() * 1.7;
+        this.ph = Math.random() * 6.283;
+        this.z = 0.4 + Math.random() * 0.6;
+      }
+
+      push(fx, fy) {
+        this.vx += fx;
+        this.vy += fy;
+      }
+
+      update(w, h) {
+        this.vx *= 0.985;
+        this.vy *= 0.985;
+        this.ph += 0.01;
+
+        if (Math.hypot(this.vx, this.vy) < 0.15) {
+          this.vx += Math.cos(this.ph) * 0.05;
+          this.vy += Math.sin(this.ph) * 0.05;
+        }
+
+        this.x += this.vx * this.z + 0.0;
+        this.y += this.vy * this.z;
+
+        if (this.x < -12) this.x = w + 12;
+        if (this.x > w + 12) this.x = -12;
+        if (this.y < -12) this.y = h + 12;
+        if (this.y > h + 12) this.y = -12;
+      }
+
+      get alive() {
+        return true;
+      }
+
+      draw(c, col, t, ox, oy) {
+        c.fillStyle = `rgba(${col},${0.45 + 0.25 * Math.sin(t * 2 + this.ph)})`;
+        c.beginPath();
+        c.arc(this.x + ox * this.z, this.y + oy * this.z, this.r * this.z + 0.4, 0, 6.283);
+        c.fill();
+      }
+    }
+
+    class GlowParticle extends Particle {
+      constructor(w, h) {
+        super(w, h);
+        this.r = 2 + Math.random() * 1.6;
+      }
+
+      draw(c, col, t, ox, oy) {
+        const x = this.x + ox * this.z;
+        const y = this.y + oy * this.z;
+        const p = 0.5 + 0.5 * Math.sin(t * 1.6 + this.ph);
+        const R = this.r * (5 + p * 5);
+        const g = c.createRadialGradient(x, y, 0, x, y, R);
+        g.addColorStop(0, `rgba(${col},.5)`);
+        g.addColorStop(1, `rgba(${col},0)`);
+        c.fillStyle = g;
+        c.beginPath();
+        c.arc(x, y, R, 0, 6.283);
+        c.fill();
+
+        c.fillStyle = `rgba(${col},.95)`;
+        c.beginPath();
+        c.arc(x, y, this.r * 0.8, 0, 6.283);
+        c.fill();
+      }
+    }
+
+    class Spark extends Particle {
+      constructor(x, y) {
+        super(0, 0);
+        this.x = x;
+        this.y = y;
+        const a = Math.random() * 6.283;
+        const s = 1.5 + Math.random() * 3.5;
+        this.vx = Math.cos(a) * s;
+        this.vy = Math.sin(a) * s;
+        this.life = 1;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= 0.93;
+        this.vy *= 0.93;
+        this.life -= 0.022;
+      }
+
+      get alive() {
+        return this.life > 0;
+      }
+
+      draw(c, col) {
+        c.strokeStyle = `rgba(${col},${this.life * 0.85})`;
+        c.lineWidth = 1.4;
+        c.beginPath();
+        c.moveTo(this.x, this.y);
+        c.lineTo(this.x - this.vx * 3, this.y - this.vy * 3);
+        c.stroke();
+      }
+    }
+
+    class ParticleField {
+      #host;
+      #cv;
+      #c;
+      #w = 0;
+      #h = 0;
+      #dots = [];
+      #sparks = [];
+      #rings = [];
+      #m = { x: -9999, y: -9999 };
+      #col = "242,242,242";
+      #vis = true;
+      #going = false;
+      #t = 0;
+
+      static LINK = 140;
+      static GRAB = 200;
+      static PUSH = 100;
+
+      constructor(host, cv) {
+        this.#host = host;
+        this.#cv = cv;
+        this.#c = cv.getContext("2d");
+
+        addEventListener("pointermove", (e) => {
+          const r = host.getBoundingClientRect();
+          const x = e.clientX - r.left;
+          const y = e.clientY - r.top;
+          this.#m = x < 0 || y < 0 || x > this.#w || y > this.#h ? { x: -9999, y: -9999 } : { x, y };
+          if (reduced) this.#kick();
+        });
+
+        host.addEventListener("pointerdown", (e) => {
+          if (e.target.closest("a,button")) return;
+          const r = host.getBoundingClientRect();
+          const x = e.clientX - r.left;
+          const y = e.clientY - r.top;
+          this.burst(x, y);
+        });
+
+        new IntersectionObserver((e) => {
+          this.#vis = e[0].isIntersecting;
+          if (this.#vis) this.#kick();
+        }).observe(host);
+
+        new ResizeObserver(() => this.#size()).observe(host);
+        document.addEventListener("visibilitychange", () => this.#kick());
+        matchMedia("(prefers-color-scheme:light)").addEventListener("change", () =>
+          setTimeout(() => {
+            this.#readCol();
+            this.#kick();
+          }, 60)
+        );
+
+        this.#readCol();
+        this.#size();
+      }
+
+      #readCol() {
+        const m = getComputedStyle(document.body).color.match(/\d+/g);
+        if (m) this.#col = m.slice(0, 3).join(",");
+      }
+
+      #size() {
+        const d = Math.min(devicePixelRatio || 1, 2);
+        this.#w = this.#host.clientWidth;
+        this.#h = this.#host.clientHeight;
+        this.#cv.width = this.#w * d;
+        this.#cv.height = this.#h * d;
+        this.#c.setTransform(d, 0, 0, d, 0, 0);
+
+        const n = Math.min(350, Math.round((this.#w * this.#h) / 8000));
+        while (this.#dots.length < n) {
+          this.#dots.push(Math.random() < 0.16 ? new GlowParticle(this.#w, this.#h) : new Particle(this.#w, this.#h));
+        }
+        this.#dots.length = n;
+        this.#kick();
+      }
+
+      burst(x, y) {
+        for (let i = 0; i < 16; i++) this.#sparks.push(new Spark(x, y));
+        this.#rings.push({ x, y, r: 0, life: 1 });
+        if (reduced) this.#kick();
+      }
+
+      #kick() {
+        if (!this.#going) {
+          this.#going = true;
+          requestAnimationFrame(() => this.#frame());
+        }
+      }
+
+      #frame() {
+        this.#going = false;
+        if (!this.#vis || document.hidden) return;
+
+        const c = this.#c;
+        const w = this.#w;
+        const h = this.#h;
+        const m = this.#m;
+        const col = this.#col;
+        const D = this.#dots;
+        this.#t += 0.016;
+        const t = this.#t;
+
+        //const ox = m.x > -999 ? (w / 2 - m.x) * 0.04 : 0;
+        //const oy = m.x > -999 ? (h / 2 - m.y) * 0.04 : 0;
+        const ox = 0;
+        const oy = 0;
+
+        c.clearRect(0, 0, w, h);
+
+        if (m.x > -999) {
+          const g = c.createRadialGradient(m.x, m.y, 0, m.x, m.y, 230);
+          g.addColorStop(0, `rgba(${col},.11)`);
+          g.addColorStop(1, `rgba(${col},0)`);
+          c.fillStyle = g;
+          c.fillRect(m.x - 230, m.y - 230, 460, 460);
+        }
+        
+
+        for (const r of this.#rings) {
+          r.r += 7;
+          r.life -= 0.026;
+          c.strokeStyle = `rgba(${col},${Math.max(r.life, 0) * 0.5})`;
+          c.lineWidth = 1.5;
+          c.beginPath();
+          c.arc(r.x, r.y, r.r, 0, 6.283);
+          c.stroke();
+        }
+        this.#rings = this.#rings.filter((r) => r.life > 0);
+
+        for (let i = 0; i < D.length; i++) {
+          const a = D[i];
+          if (!reduced) {
+            let dx = a.x - m.x;
+            let dy = a.y - m.y;
+            let d = Math.hypot(dx, dy) || 1;
+            if (d < ParticleField.PUSH) {
+              const f = (1 - d / ParticleField.PUSH) * 0.35;
+              a.push((dx / d) * f, (dy / d) * f);
+            }
+
+            for (const r of this.#rings) {
+              dx = a.x - r.x;
+              dy = a.y - r.y;
+              d = Math.hypot(dx, dy) || 1;
+              if (Math.abs(d - r.r) < 26) a.push((dx / d) * 0.9 * r.life, (dy / d) * 0.9 * r.life);
+            }
+
+            a.update(w, h);
+          }
+
+          a.draw(c, col, t, ox, oy);
+
+          const ax = a.x + ox * a.z;
+          const ay = a.y + oy * a.z;
+          for (let j = i + 1; j < D.length; j++) {
+            const b = D[j];
+            const bx = b.x + ox * b.z;
+            const by = b.y + oy * b.z;
+            const d = Math.hypot(ax - bx, ay - by);
+            if (d < ParticleField.LINK) {
+              c.strokeStyle = `rgba(${col},${0.26 * (1 - d / ParticleField.LINK)})`;
+              c.lineWidth = 1;
+              c.beginPath();
+              c.moveTo(ax, ay);
+              c.lineTo(bx, by);
+              c.stroke();
+            }
+          }
+
+          const e = Math.hypot(ax - m.x, ay - m.y);
+          if (e < ParticleField.GRAB) {
+            c.strokeStyle = `rgba(${col},${0.6 * (1 - e / ParticleField.GRAB)})`;
+            c.beginPath();
+            c.moveTo(ax, ay);
+            c.lineTo(m.x, m.y);
+            c.stroke();
+          }
+        }
+
+        for (const s of this.#sparks) {
+          s.update();
+          s.draw(c, col);
+        }
+        this.#sparks = this.#sparks.filter((s) => s.alive);
+
+        if (!reduced || this.#sparks.length || this.#rings.length) {
+          this.#going = true;
+          requestAnimationFrame(() => this.#frame());
+        }
+      }
+    }
+
+    /*Lanyard*/
+    class Lanyard {
+      #cv;
+      #c;
+      #W = 0;
+      #H = 0;
+      #dpr = 1;
+      #P = [];
+      #K = [];
+      #drag = null;
+      #vis = false;
+      #going = false;
+      #t = 0;
+      #img = null;
+      #hover = false;
+
+      static CW = 230;
+      static CH = 320;
+      static CLIP = 25;
+
+      constructor(cv) {
+        this.#cv = cv;
+        this.#c = cv.getContext("2d");
+
+        if (DATA.photo) {
+          this.#img = new Image();
+          this.#img.src = DATA.photo;
+        }
+
+        new ResizeObserver(() => this.#build()).observe(cv.parentElement);
+        new IntersectionObserver((e) => {
+          this.#vis = e[0].isIntersecting;
+          if (this.#vis) {
+            this.#nudge();
+            this.#kick();
+          }
+        }).observe(cv);
+
+        cv.addEventListener("pointerdown", (e) => {
+          const p = this.#pos(e);
+          if (!this.#hit(p)) return;
+          const B = this.#P[1];
+          this.#drag = { dx: B.x - p.x, dy: B.y - p.y, x: p.x, y: p.y };
+          cv.setPointerCapture(e.pointerId);
+          cv.style.cursor = "grabbing";
+          this.#kick();
+        });
+
+        cv.addEventListener("pointermove", (e) => {
+          const p = this.#pos(e);
+          if (this.#drag) {
+            this.#drag.x = Math.min(Math.max(p.x, 30), this.#W - 30);
+            this.#drag.y = Math.min(Math.max(p.y, 80), this.#H - 30);
+          } else {
+            this.#hover = this.#hit(p);
+            cv.style.cursor = this.#hover ? "grab" : "default";
+          }
+        });
+
+        const end = () => {
+          if (this.#drag) {
+            for (const q of this.#P) {
+              q.px = q.x - (q.x - q.px) * 0.6;
+              q.py = q.y - (q.y - q.py) * 0.6;
+            }
+          }
+          this.#drag = null;
+          cv.style.cursor = this.#hover ? "grab" : "default";
+        };
+
+        cv.addEventListener("pointerup", end);
+        cv.addEventListener("pointercancel", end);
+        cv.addEventListener(
+          "touchstart",
+          (e) => {
+            const t = e.touches[0];
+            const r = cv.getBoundingClientRect();
+            if (this.#hit({ x: t.clientX - r.left, y: t.clientY - r.top })) e.preventDefault();
+          },
+          { passive: false }
+        );
+      }
+
+      #build() {
+        const cv = this.#cv;
+        const d = Math.min(devicePixelRatio || 1, 2);
+        this.#dpr = d;
+        this.#W = cv.parentElement.clientWidth;
+        this.#H = cv.parentElement.clientHeight;
+        cv.width = this.#W * d;
+        cv.height = this.#H * d;
+        this.#c.setTransform(d, 0, 0, d, 0, 0);
+
+        const cx = this.#W / 2;
+        const sp = Math.min(56, this.#W * 0.15);
+        const N = 8;
+        const L = Lanyard.CLIP + Lanyard.CH;
+        const pt = (x, y, pin) => ({ x, y, px: x, py: y, pin: !!pin });
+
+        const P = [pt(cx, 300), pt(cx, 300 + L)];
+        const K = [[0, 1, L]];
+
+        [-1, 1].forEach((side) => {
+          const start = P.length;
+          for (let k = 0; k < N; k++) {
+            const u = k / N;
+            P.push(pt(cx + side * sp * (1 - u), -30 + 330 * u, k === 0));
+          }
+          for (let k = start; k < P.length; k++) {
+            const nx = k + 1 < P.length ? k + 1 : 0;
+            if (k + 1 >= start + N) K.push([k, 0, 0]);
+            else K.push([k, k + 1, 0]);
+          }
+        });
+
+        K.forEach((k) => {
+          if (!k[2]) {
+            const a = P[k[0]];
+            const b = P[k[1]];
+            k[2] = Math.hypot(a.x - b.x, a.y - b.y) * 1.02;
+          }
+        });
+
+        this.#P = P;
+        this.#K = K;
+        this.#nudge();
+        this.#kick();
+      }
+
+      #nudge() {
+        const B = this.#P[1];
+        if (B && !reduced) B.px -= 5;
+      }
+
+      #ang() {
+        const A = this.#P[0];
+        const B = this.#P[1];
+        return Math.atan2(-(B.x - A.x), B.y - A.y);
+      }
+
+      #pos(e) {
+        const r = this.#cv.getBoundingClientRect();
+        return {
+          x: e.clientX - r.left,
+          y: e.clientY - r.top,
+        };
+      }
+
+      #hit(p) {
+        const A = this.#P[0];
+        const a = this.#ang();
+        const dx = p.x - A.x;
+        const dy = p.y - A.y;
+        const lx = dx * Math.cos(a) + dy * Math.sin(a);
+        const ly = -dx * Math.sin(a) + dy * Math.cos(a);
+
+        return lx > -Lanyard.CW / 2 && lx < Lanyard.CW / 2 && ly > 0 && ly < Lanyard.CLIP + Lanyard.CH;
+      }
+
+      #kick() {
+        if (!this.#going) {
+          this.#going = true;
+          requestAnimationFrame(() => this.#frame());
+        }
+      }
+
+      #step() {
+        const P = this.#P;
+        this.#t += 0.016;
+
+        for (const p of P) {
+          if (p.pin) continue;
+          let vx = (p.x - p.px) * 0.994;
+          let vy = (p.y - p.py) * 0.994;
+          const s = Math.hypot(vx, vy);
+          if (s > 28) {
+            vx *= 28 / s;
+            vy *= 28 / s;
+          }
+          p.px = p.x;
+          p.py = p.y;
+          p.x += vx;
+          p.y += vy + 0.62;
+        }
+
+        P[1].x += Math.sin(this.#t * 0.7) * 0.03;
+
+        if (this.#drag) {
+          const B = P[1];
+          const g = this.#drag;
+          B.x += (g.x + g.dx - B.x) * 0.3;
+          B.y += (g.y + g.dy - B.y) * 0.3;
+        }
+
+        for (let it = 0; it < 18; it++)
+          for (const [i, j, len] of this.#K) {
+            const a = P[i];
+            const b = P[j];
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const d = Math.hypot(dx, dy) || 1;
+            const diff = (d - len) / d;
+            const w = a.pin ? 0 : b.pin ? 1 : 0.5;
+            const v = a.pin ? 1 : b.pin ? 0 : 0.5;
+            if (!a.pin) {
+              a.x += dx * diff * w;
+              a.y += dy * diff * w;
+            }
+            if (!b.pin) {
+              b.x -= dx * diff * v;
+              b.y -= dy * diff * v;
+            }
+          }
+      }
+
+      #curve(ids) {
+        const p = ids.map((i) => this.#P[i]);
+        const o = [];
+        const f = (a, b, c, d, u) =>
+          0.5 *
+          (2 * b +
+            (-a + c) * u +
+            (2 * a - 5 * b + 4 * c - d) * u * u +
+            (-a + 3 * b - 3 * c + d) * u * u * u);
+
+        for (let i = 0; i < p.length - 1; i++) {
+          const a = p[Math.max(i - 1, 0)];
+          const b = p[i];
+          const c = p[i + 1];
+          const d = p[Math.min(i + 2, p.length - 1)];
+          for (let s = 0; s < 6; s++) {
+            const u = s / 6;
+            o.push({ x: f(a.x, b.x, c.x, d.x, u), y: f(a.y, b.y, c.y, d.y, u) });
+          }
+        }
+
+        o.push({ x: p[p.length - 1].x, y: p[p.length - 1].y });
+        return o;
+      }
+
+      #strap(poly) {
+        const c = this.#c;
+        c.lineJoin = "round";
+        c.beginPath();
+        poly.forEach((q, i) => (i ? c.lineTo(q.x, q.y) : c.moveTo(q.x, q.y)));
+
+        c.strokeStyle = "#3a3a3a";
+        c.lineWidth = 17;
+        c.stroke();
+        c.strokeStyle = "#121212";
+        c.lineWidth = 14;
+        c.stroke();
+
+        const len = [];
+        let total = 0;
+        for (let i = 0; i < poly.length - 1; i++) {
+          const l = Math.hypot(poly[i + 1].x - poly[i].x, poly[i + 1].y - poly[i].y);
+          len.push(l);
+          total += l;
+        }
+
+        const txt = `NATIONAL UNIVERSITY  ✦  NATIONAL UNIVERSITY  ✦  `;
+        c.font = "700 7.5px Syne,Arial,sans-serif";
+        c.textAlign = "center";
+        c.textBaseline = "middle";
+        c.fillStyle = "rgba(255,255,255,.72)";
+
+        let s = 10;
+        let seg = 0;
+        let acc = 0;
+
+        for (let n = 0; ; n++) {
+          const ch = txt[n % txt.length];
+          const w = c.measureText(ch).width + 1.5;
+          if (s + w > total - 4) break;
+          while (seg < len.length - 1 && acc + len[seg] < s + w / 2) {
+            acc += len[seg];
+            seg++;
+          }
+          const u = (s + w / 2 - acc) / (len[seg] || 1);
+          const a = poly[seg];
+          const b = poly[seg + 1];
+          c.save();
+          c.translate(a.x + (b.x - a.x) * u, a.y + (b.y - a.y) * u);
+          c.rotate(Math.atan2(b.y - a.y, b.x - a.x));
+          c.fillText(ch, 0, 0);
+          c.restore();
+          s += w;
+        }
+      }
+
+      #card() {
+        const c = this.#c;
+        const A = this.#P[0];
+        const a = this.#ang();
+        const W = Lanyard.CW;
+        const H = Lanyard.CH;
+        const T = Lanyard.CLIP;
+
+        c.save();
+        c.translate(A.x, A.y);
+        c.rotate(a);
+
+        c.shadowColor = "rgba(0,0,0,.55)";
+        c.shadowBlur = 30;
+        c.shadowOffsetY = 16;
+        c.fillStyle = "#f1f1f1";
+        c.beginPath();
+        c.roundRect(-W / 2, T, W, H, 16);
+        c.fill();
+        c.shadowColor = "transparent";
+
+        if (this.#hover || this.#drag) {
+          c.strokeStyle = "rgba(255,255,255,.9)";
+          c.lineWidth = 2;
+          c.stroke();
+        }
+
+        c.fillStyle = "#1a1a1a";
+        c.beginPath();
+        c.roundRect(-20, T + 10, 40, 8, 4);
+        c.fill();
+
+        c.save();
+        c.beginPath();
+        c.roundRect(-W / 2 + 16, T + 34, W - 32, 172, 10);
+        c.clip();
+        const g = c.createLinearGradient(0, T + 34, 0, T + 206);
+        g.addColorStop(0, "#d4d4d4");
+        g.addColorStop(1, "#707070");
+        c.fillStyle = g;
+        c.fillRect(-W / 2, T + 34, W, 172);
+
+        if (this.#img && this.#img.complete && this.#img.naturalWidth) {
+          const im = this.#img;
+          const k = Math.max((W - 32) / im.naturalWidth, 172 / im.naturalHeight);
+          c.drawImage(
+            im,
+            -im.naturalWidth * k / 2,
+            T + 34 + (172 - im.naturalHeight * k) / 2,
+            im.naturalWidth * k,
+            im.naturalHeight * k
+          );
+        } else {
+          c.fillStyle = "#222";
+          c.beginPath();
+          c.arc(0, T + 98, 34, 0, 6.283);
+          c.fill();
+          c.fillStyle = "#111";
+          c.beginPath();
+          c.ellipse(0, T + 190, 76, 62, 0, Math.PI, 0);
+          c.fill();
+          c.fillStyle = "#eee";
+          c.beginPath();
+          c.moveTo(-12, T + 142);
+          c.lineTo(0, T + 170);
+          c.lineTo(12, T + 142);
+          c.fill();
+        }
+        c.restore();
+
+        c.textAlign = "left";
+        c.textBaseline = "alphabetic";
+        c.fillStyle = "#0b0b0b";
+        c.font = "800 20px Syne,Arial,sans-serif";
+        c.fillText(DATA.name, -W / 2 + 16, T + 234);
+
+        c.fillStyle = "#555";
+        c.font = "500 12px Manrope,Arial,sans-serif";
+        c.fillText(DATA.role, -W / 2 + 16, T + 254);
+
+        c.fillStyle = "#111";
+        let x = -W / 2 + 16;
+        for (let i = 0; i < 34; i++) {
+          const bw = (i * 7) % 4 + 1;
+          c.fillRect(x, T + 270, bw, 24);
+          x += bw + 2;
+          if (x > -W / 2 + 120) break;
+        }
+
+        c.fillStyle = "#777";
+        c.font = "500 10px Manrope,Arial,sans-serif";
+        c.textAlign = "right";
+        c.fillText("No. 2026-0001", W / 2 - 16, T + 288);
+
+        const hue = (a * 260 + this.#t * 30) % 360;
+        const h = c.createLinearGradient(-W / 2 + 16, 0, W / 2 - 16, 0);
+        [0, 0.33, 0.66, 1].forEach((s, i) => h.addColorStop(s, `hsl(${hue + i * 70},70%,62%)`));
+        c.fillStyle = h;
+        c.beginPath();
+        c.roundRect(-W / 2 + 16, T + 292, W - 32, 9, 4);
+        c.fill();
+
+        const sh = Math.min(Math.max(0.5 + a * 1.4, 0.1), 0.9);
+        const gl = c.createLinearGradient(-W / 2, T, W / 2, T + H);
+        const st = (v) => Math.min(1, Math.max(0, v));
+        gl.addColorStop(st(sh - 0.18), "rgba(255,255,255,0)");
+        gl.addColorStop(st(sh), "rgba(255,255,255,.28)");
+        gl.addColorStop(st(sh + 0.18), "rgba(255,255,255,0)");
+        c.fillStyle = gl;
+        c.beginPath();
+        c.roundRect(-W / 2, T, W, H, 16);
+        c.fill();
+
+        const m = c.createLinearGradient(-14, 0, 14, 0);
+        m.addColorStop(0, "#8c8c8c");
+        m.addColorStop(0.5, "#f2f2f2");
+        m.addColorStop(1, "#7a7a7a");
+        c.fillStyle = m;
+        c.beginPath();
+        c.roundRect(-14, 4, 28, T + 4, 6);
+        c.fill();
+        c.fillStyle = "#2a2a2a";
+        c.beginPath();
+        c.roundRect(-5, 12, 10, 16, 4);
+        c.fill();
+        c.strokeStyle = m;
+        c.lineWidth = 3;
+        c.beginPath();
+        c.arc(0, 0, 6, 0, 6.283);
+        c.stroke();
+
+        c.restore();
+      }
+
+      #frame() {
+        this.#going = false;
+        if (!this.#vis || !this.#P.length) return;
+        if (!reduced) {
+          this.#step();
+          this.#step();
+        }
+
+        const c = this.#c;
+        c.setTransform(this.#dpr, 0, 0, this.#dpr, 0, 0);
+        c.shadowColor = "transparent";
+        c.clearRect(0, 0, this.#W, this.#H);
+
+        try {
+          this.#strap(this.#curve([2, 3, 4, 5, 6, 7, 8, 9, 0]));
+          this.#strap(this.#curve([10, 11, 12, 13, 14, 15, 16, 17, 0]));
+          this.#card();
+        } catch (err) {
+          console.error(err);
+        }
+
+        if (!reduced) {
+          this.#going = true;
+          requestAnimationFrame(() => this.#frame());
+        }
+      }
+    }
+
+    /* ---------- 5. Cards: inheritance + polymorphism ---------- */
+    class Card {
+      constructor(d, i) {
+        this.d = d;
+        this.i = i;
+      }
+
+      thumb() {
+        return '<div class="th"></div>';
+      }
+
+      body() {
+        return "";
+      }
+
+      render() {
+        return `<article class="card">${this.thumb()}<div class="bd">${this.body()}</div></article>`;
+      }
+    }
+
+    class ProjectCard extends Card {
+      thumb() {
+        const d = this.d;
+        if (d.img) {
+          return `<div class="th"><img src="${esc(d.img)}" alt="${esc(d.t)}"></div>`;
+        }
+
+        const i = this.i;
+        const bars = [0, 1, 2]
+          .map((k) => `<rect x="14" y="${46 + k * 16}" width="${60 + ((i + k) * 23) % 70}" height="7" rx="3.500" fill="#3a3a3a"/>`)
+          .join("");
+
+        return `<div class="th"><svg viewBox="0 0 200 125" preserveAspectRatio="xMidYMid slice"><rect width="200" height="125" fill="#141414"/><rect x="0" y="0" width="200" height="22" fill="#1c1c1c"/><circle cx="12" cy="11" r="3" fill="#555"/><circle cx="22" cy="11" r="3" fill="#444"/><circle cx="32" cy="11" r="3" fill="#333"/><rect x="14" y="30" width="${90 + i * 20}" height="9" rx="4" fill="#bbb"/>${bars}<rect x="${120 + i * 12}" y="60" width="64" height="48" rx="8" fill="#242424"/></svg></div>`;
+      }
+
+      body() {
+        const d = this.d;
+        return `<h3>${esc(d.t)}</h3><p>${esc(d.d)}</p><p style="color:var(--dim)">${esc(d.tags)}</p><a href="${esc(d.link || d.l || "#")}" class="btn solid view-project" data-title="${esc(d.t)}" data-image="${esc(d.img || "")}" data-link="${esc(d.link || d.l || "#")}" data-repo="${esc(d.repo || "#")}">View project <svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></a>`;
+      }
+    }
+
+    class AchievementCard extends Card {
+      thumb() {
+        return `<div class="th cert"><svg viewBox="0 0 24 24" style="width:44px;height:44px;stroke:#999"><circle cx="12" cy="9" r="5"/><path d="m9 13-1 8 4-2 4 2-1-8"/></svg></div>`;
+      }
+
+      body() {
+        return `<h3>${esc(this.d.t)}</h3><p>${esc(this.d.d)}</p>`;
+      }
+    }
+
+    class StackTile extends Card {
+      render() {
+        const [n, k, c] = this.d;
+        return `<div class="tile"><i style="background:${c}">${esc(k)}</i>${esc(n)}</div>`;
+      }
+    }
+
+    class Showcase {
+      #panel;
+      #sets;
+
+      constructor(panel, tabs, sets) {
+        this.#panel = panel;
+        this.#sets = sets;
+
+        tabs.forEach((b) =>
+          b.addEventListener("click", () => {
+            tabs.forEach((x) => x.setAttribute("aria-selected", x === b));
+            this.show(b.dataset.t);
+          })
+        );
+
+        this.show("projects");
+      }
+
+      show(key) {
+        const { cls, items, wrap } = this.#sets[key];
+        this.#panel.innerHTML = `<div class="${wrap}">${items.map((d, i) => new cls(d, i).render()).join("")}</div>`;
+      }
+    }
+
+    /* Form validation */
+    class Rule {
+      constructor(msg) {
+        this.msg = msg;
+      }
+
+      test() {
+        return true;
+      }
+    }
+
+    class Required extends Rule {
+      test(v) {
+        return v.trim().length > 0;
+      }
+    }
+
+    class MinLength extends Rule {
+      constructor(n, msg) {
+        super(msg);
+        this.n = n;
+      }
+
+      test(v) {
+        return v.trim().length >= this.n;
+      }
+    }
+
+    class EmailRule extends Rule {
+      test(v) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+      }
+    }
+
+    class Field {
+      #el;
+      #rules;
+      #err;
+
+      constructor(el, rules) {
+        this.#el = el;
+        this.#rules = rules;
+        this.#err = el.nextElementSibling;
+        el.addEventListener("input", () => this.validate());
+      }
+
+      get value() {
+        return this.#el.value.trim();
+      }
+
+      clear() {
+        this.#el.value = "";
+        this.#show("");
+      }
+
+      #show(m) {
+        this.#err.textContent = m;
+        this.#el.setAttribute("aria-invalid", m ? "true" : "false");
+      }
+
+      validate() {
+        for (const r of this.#rules) {
+          if (!r.test(this.#el.value)) {
+            this.#show(r.msg);
+            return false;
+          }
+        }
+        this.#show("");
+        return true;
+      }
+    }
+
+    class ContactForm {
+      #fields;
+
+      constructor(fields, btn, onValid) {
+        this.#fields = fields;
+        btn.addEventListener("click", () => {
+          const ok = this.#fields.map((f) => f.validate()).every(Boolean);
+          if (ok) {
+            onValid(this.#fields.map((f) => f.value));
+            this.#fields.forEach((f) => f.clear());
+          } else {
+            toast("Please fix the highlighted fields");
+          }
+        });
+      }
+    }
+
+    class CommentBoard {
+      #list;
+      #items = [{ n: "Kerbs", c: "Thanks for visiting my portfolio!" }];
+
+      constructor(list) {
+        this.#list = list;
+        try {
+          const v = JSON.parse(localStorage.getItem("cm2") || "null");
+          if (Array.isArray(v)) this.#items = v;
+        } catch (e) { }
+        this.draw();
+      }
+
+      add(n, c) {
+        this.#items.unshift({ n: n.slice(0, 40), c: c.slice(0, 400) });
+        try {
+          localStorage.setItem("cm2", JSON.stringify(this.#items));
+        } catch (e) { }
+        this.draw();
+      }
+
+      draw() {
+        this.#list.innerHTML = this.#items
+          .map(
+            (x) =>
+              `<div class="cm"><div class="av">${esc(x.n.charAt(0).toUpperCase())}</div><div><b>${esc(x.n)}</b><p>${esc(x.c)}</p></div></div>`
+          )
+          .join("");
+      }
+    }
+
+    /* Start everything */
+    class App {
+      static init() {
+        setTimeout(() => $("#intro").classList.add("done"), 2400);
+
+        if (DATA.photo) {
+          const a = $("#avatar");
+          a.style.backgroundImage = `url(${DATA.photo})`;
+          a.innerHTML = "";
+        }
+
+        $("#track").innerHTML = [...DATA.stack, ...DATA.stack].map((s) => `<span>${esc(s[0])}</span>`).join("");
+        $("#skills").innerHTML = DATA.skills.map((s) => `<div class="sk"><div><span>${esc(s[0])}</span><em>${s[1]}%</em></div><div class="bar"><i style="--w:${s[1]}%"></i></div></div>`).join("");
+        $("#interests").innerHTML = DATA.interests.map((i) => `<span class="chip">${esc(i)}</span>`).join("");
+
+        new ParticleField($("#home"), $("#fx"));
+        new Lanyard($("#lc"));
+        setTimeout(() => new Typewriter($("#type"), DATA.phrases).start(), 2500);
+
+        new Showcase($("#panel"), document.querySelectorAll(".tabs button"), {
+          projects: { cls: ProjectCard, items: DATA.projects, wrap: "grid" },
+          achievements: { cls: AchievementCard, items: DATA.achievements, wrap: "grid" },
+          stack: { cls: StackTile, items: DATA.stack, wrap: "tech" },
+        });
+
+        document.addEventListener("click", (event) => {
+          const btn = event.target.closest(".view-project");
+          if (!btn) return;
+
+          const title = btn.dataset.title;
+          const image = btn.dataset.image || "assets/images/pilipin.png";
+          const link = btn.dataset.link || "#";
+          const repo = btn.dataset.repo || "#";
+
+          const modal = document.createElement("div");
+          modal.className = "project-modal";
+
+          modal.innerHTML = `
+            <div class="project-modal-box">
+              <button type="button" class="project-close" aria-label="Close project preview">×</button>
+              <h3>${esc(title)}</h3>
+              <img src="${esc(image)}" alt="${esc(title)}">
+              <div class="project-links">
+                <a class="btn solid" href="${esc(link)}" target="_blank" rel="noreferrer">Open live demo</a>
+                <a class="btn" href="${esc(repo)}" target="_blank" rel="noreferrer">GitHub repo</a>
+              </div>
+            </div>
+          `;
+
+          modal.addEventListener("click", (e) => {
+            if (e.target === modal) modal.remove();
+          });
+
+          const closeBtn = modal.querySelector(".project-close");
+          closeBtn.addEventListener("click", () => modal.remove());
+
+          document.body.appendChild(modal);
+        });
+
+        const text = (m) => new Required(m);
+        const f = (id) => $("#" + id);
+
+        new ContactForm(
+          [
+            new Field(f("cn"), [text("Enter your name"), new MinLength(2, "Name is too short")]),
+            new Field(f("ce"), [text("Enter your email"), new EmailRule("Enter a valid email, like name@mail.com")]),
+            new Field(f("cm"), [text("Write a message"), new MinLength(10, "Message needs at least 10 characters")]),
+          ],
+          $("#send"),
+          () => toast("Message ready. Connect an email service to deliver it.")
+        );
+
+        const board = new CommentBoard($("#list"));
+        const kn = new Field(f("kn"), [text("Enter your name")]);
+        const kc = new Field(f("kc"), [text("Write a comment")]);
+
+        $("#post").addEventListener("click", () => {
+          if (kn.validate() & kc.validate()) {
+            board.add(kn.value, kc.value);
+            kn.clear();
+            kc.clear();
+            toast("Comment posted");
+          }
+        });
+
+        $("#cv").addEventListener("click", (e) => {
+          e.preventDefault();
+          toast("Add your CV link to the Download CV button");
+        });
+
+        let seen = false;
+        const count = (id, n) => {
+          const el = $(id);
+          let i = 0;
+          const h = setInterval(() => {
+            el.textContent = ++i;
+            if (i >= n) clearInterval(h);
+          }, 260);
+        };
+
+        new IntersectionObserver(
+          (e) => {
+            if (e[0].isIntersecting && !seen) {
+              seen = true;
+              count("#n1", DATA.projects.length);
+              count("#n2", DATA.achievements.length);
+              count("#n3", DATA.projects.length);
+            }
+          },
+          { threshold: 0.4 }
+        ).observe($(".stats"));
+
+        new IntersectionObserver(
+          (e) => {
+            if (e[0].isIntersecting) $("#more").classList.add("on");
+          },
+          { threshold: 0.25 }
+        ).observe($("#more"));
+
+        const links = document.querySelectorAll('nav a[href^="#"]:not(.logo)');
+        const io = new IntersectionObserver((es) =>
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              links.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
+            }
+          })
+          , { rootMargin: "-45% 0px -50% 0px" });
+
+        document.querySelectorAll("main section").forEach((x) => io.observe(x));
+      }
+    }
+
+    App.init();
+  </script>
+</body>
+
+</html>
